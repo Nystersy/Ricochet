@@ -1,0 +1,21 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+Logs/
+UserSettings/
+
+# Visual Studio
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+
+# Windows
+Thumbs.db
+desktop.ini
