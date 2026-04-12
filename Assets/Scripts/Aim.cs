@@ -1,13 +1,23 @@
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Aim : MonoBehaviour
 {
     public LineRenderer lineRenderer;
-    public int maxReflections = 5;
+
+    [Header("Настройки линии прицела")]
+    public int maxReflectionsLine = 2;  
+    public float raycastDistance = 100f;
     public LayerMask collisionMask;
 
-    private List<Vector3> points = new List<Vector3>(); 
+    [Header("Настройки пули")]
+    public int maxReflectionsBullet = 10; 
+    public GameObject bulletPrefab;
+    public float bulletSpeed = 10f;
+    public float wallBounceOffset = 0.2f;
+
+    private List<Vector3> points = new List<Vector3>();
 
     void Start()
     {
@@ -17,6 +27,7 @@ public class Aim : MonoBehaviour
         lineRenderer.startWidth = 0.1f;
         lineRenderer.endWidth = 0.1f;
         lineRenderer.positionCount = 0;
+        lineRenderer.useWorldSpace = true;
     }
 
     void Update()
@@ -31,37 +42,38 @@ public class Aim : MonoBehaviour
 
     void DrawPredictionLine()
     {
-        Vector2 startPoint = transform.position;
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = (mousePos - startPoint).normalized;
+        Vector3 startPoint = transform.position;
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePos.z = 0;
+        Vector3 direction = (mousePos - startPoint).normalized;
 
         points.Clear();
-        points.Add(startPoint); 
+        points.Add(startPoint);
 
-        Vector2 currentPoint = startPoint;
-        Vector2 currentDir = direction;
-        bool hitEnemy = false;
+        Vector3 currentPoint = startPoint;
+        Vector3 currentDir = direction;
 
-        for (int i = 0; i < maxReflections; i++)
+        for (int i = 0; i < maxReflectionsLine; i++)
         {
-            RaycastHit2D hit = Physics2D.Raycast(currentPoint, currentDir, 100f, collisionMask);
+            RaycastHit2D hit = Physics2D.Raycast(currentPoint, currentDir, raycastDistance, collisionMask);
 
             if (hit.collider != null)
             {
-                points.Add(hit.point); 
+                Vector3 hitPoint = new Vector3(hit.point.x, hit.point.y, 0);
+                points.Add(hitPoint);
 
                 if (hit.collider.CompareTag("Enemy"))
                 {
-                    hitEnemy = true;
                     break;
                 }
 
-                currentDir = Vector2.Reflect(currentDir, hit.normal);
-                currentPoint = hit.point + currentDir * 0.05f;
+                Vector2 reflected = Vector2.Reflect(currentDir, hit.normal);
+                currentDir = new Vector3(reflected.x, reflected.y, 0);
+                currentPoint = hitPoint + currentDir * wallBounceOffset;
             }
             else
             {
-                points.Add(currentPoint + currentDir * 20f);
+                points.Add(currentPoint + currentDir * raycastDistance);
                 break;
             }
         }
@@ -69,47 +81,69 @@ public class Aim : MonoBehaviour
         lineRenderer.positionCount = points.Count;
         lineRenderer.SetPositions(points.ToArray());
 
-        if (hitEnemy)
-        {
-            lineRenderer.startColor = Color.red;
-            lineRenderer.endColor = Color.red;
-        }
-        else
-        {
-            lineRenderer.startColor = Color.white;
-            lineRenderer.endColor = Color.white;
-        }
-    }
+        lineRenderer.startColor = Color.white;
+        lineRenderer.endColor = Color.white;
 
+    }
     void Shoot()
     {
-        Vector2 startPoint = transform.position;
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = (mousePos - startPoint).normalized;
+        Vector3 startPoint = transform.position;
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePos.z = 0;
+        Vector3 direction = (mousePos - startPoint).normalized;
+
+        List<Vector2> bulletPoints = new List<Vector2>();
+        List<Vector2> bulletDirections = new List<Vector2>();
 
         Vector2 currentPoint = startPoint;
         Vector2 currentDir = direction;
 
-        for (int i = 0; i < maxReflections; i++)
+        bulletPoints.Add(currentPoint);
+        bulletDirections.Add(currentDir);
+
+        // ИСПОЛЬЗУЕМ maxReflectionsBullet (5 отскоков)
+        for (int i = 0; i < maxReflectionsBullet; i++)
         {
-            RaycastHit2D hit = Physics2D.Raycast(currentPoint, currentDir, 100f, collisionMask);
+            RaycastHit2D hit = Physics2D.Raycast(currentPoint, currentDir, raycastDistance, collisionMask);
 
             if (hit.collider != null)
             {
+                bulletPoints.Add(hit.point);
+                bulletDirections.Add(currentDir);
+
                 if (hit.collider.CompareTag("Enemy"))
                 {
-                    Destroy(hit.collider.gameObject);
-                    Debug.Log("���� ���������!");
                     break;
                 }
 
                 currentDir = Vector2.Reflect(currentDir, hit.normal);
-                currentPoint = hit.point + currentDir * 0.05f;
+                currentDir.Normalize();
+                currentPoint = hit.point + currentDir * wallBounceOffset;
             }
             else
             {
+                bulletPoints.Add(currentPoint + currentDir * raycastDistance);
+                bulletDirections.Add(currentDir);
                 break;
             }
         }
+
+        // Создаём пулю
+        GameObject bullet = Instantiate(bulletPrefab, startPoint, Quaternion.identity);
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+
+        if (bulletScript != null)
+        {
+            bulletScript.Initialize(bulletPoints, bulletDirections, bulletSpeed, collisionMask);
+        }
+
+        StartCoroutine(HideLineTemporarily());
+    }
+
+    IEnumerator HideLineTemporarily()
+    {
+        lineRenderer.enabled = false;
+        yield return new WaitForSeconds(0.2f);
+        lineRenderer.enabled = true;
     }
 }
