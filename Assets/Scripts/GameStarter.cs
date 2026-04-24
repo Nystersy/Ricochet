@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameStarter : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class GameStarter : MonoBehaviour
 
     public static bool isGameActive = false;
     public static bool isGamePaused = false;
+    public static bool isInputLocked = true;
 
     void Start()
     {
@@ -16,84 +18,72 @@ public class GameStarter : MonoBehaviour
 
     void Update()
     {
-        if (isGameActive && Input.GetKeyDown(KeyCode.Escape))
+        if (isGameActive && !isGamePaused && Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isGamePaused)
-                ResumeGame();
-            else
-                PauseGame();
+            PauseGame();
+        }
+        else if (isGameActive && isGamePaused && Input.GetKeyDown(KeyCode.Escape))
+        {
+            ResumeGame();
         }
     }
 
     public void ShowMainMenu()
     {
-        if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
-        if (pausePanel != null) pausePanel.SetActive(false);
-        if (winPanel != null) winPanel.SetActive(false);
+        mainMenuPanel.SetActive(true);
+        pausePanel.SetActive(false);
+        winPanel.SetActive(false);
         Time.timeScale = 0f;
         isGameActive = false;
         isGamePaused = false;
+        isInputLocked = true;
     }
 
     public void StartGame()
     {
-        if (mainMenuPanel != null)
-            mainMenuPanel.SetActive(false);
-
-        if (pausePanel != null)
-            pausePanel.SetActive(false);
-
-        if (winPanel != null)
-            winPanel.SetActive(false);
-
+        mainMenuPanel.SetActive(false);
+        pausePanel.SetActive(false);
+        winPanel.SetActive(false);
         Time.timeScale = 1f;
         isGameActive = true;
         isGamePaused = false;
+        isInputLocked = false;
     }
 
     public void PauseGame()
     {
-        if (pausePanel != null) pausePanel.SetActive(true);
+        pausePanel.SetActive(true);
         Time.timeScale = 0f;
         isGamePaused = true;
+        isInputLocked = true;
     }
 
     public void ResumeGame()
     {
-        if (pausePanel != null) pausePanel.SetActive(false);
+        pausePanel.SetActive(false);
         Time.timeScale = 1f;
         isGamePaused = false;
+        isInputLocked = false;
     }
 
     public void WinGame()
     {
-        if (winPanel != null)
-        {
-            winPanel.SetActive(true);
-            Debug.Log("Победа! Панель активирована");
-        }
-        else
-        {
-            Debug.LogError("winPanel не назначен в GameStarter!");
-        }
-
+        winPanel.SetActive(true);
         Time.timeScale = 0f;
         isGameActive = false;
         isGamePaused = true;
+        isInputLocked = true;
     }
 
     public void NextLevel()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-        );
-        isGameActive = true;
-        isGamePaused = false;
-        Time.timeScale = 1f;
+        // Перезагружаем сцену
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void QuitToMenu()
     {
-        ShowMainMenu();
+        // Перезагружаем сцену и показываем меню
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

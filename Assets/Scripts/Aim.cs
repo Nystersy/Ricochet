@@ -5,16 +5,12 @@ using UnityEngine;
 public class Aim : MonoBehaviour
 {
     public LineRenderer lineRenderer;
-
-    [Header("Настройки линии прицела")]
-    public int maxReflectionsLine = 2;  
-    public float raycastDistance = 100f;
+    public int maxReflectionsLine = 2;
+    public int maxReflectionsBullet = 5;
     public LayerMask collisionMask;
-
-    [Header("Настройки пули")]
-    public int maxReflectionsBullet = 10; 
     public GameObject bulletPrefab;
-    public float bulletSpeed = 10f;
+    public float bulletSpeed = 15f;
+    public float raycastDistance = 100f;
     public float wallBounceOffset = 0.2f;
 
     private List<Vector3> points = new List<Vector3>();
@@ -32,6 +28,16 @@ public class Aim : MonoBehaviour
 
     void Update()
     {
+        if (GameStarter.isInputLocked || !GameStarter.isGameActive)
+        {
+            if (lineRenderer.enabled)
+                lineRenderer.enabled = false;
+            return;
+        }
+
+        if (!lineRenderer.enabled)
+            lineRenderer.enabled = true;
+
         DrawPredictionLine();
 
         if (Input.GetMouseButtonDown(0))
@@ -83,8 +89,8 @@ public class Aim : MonoBehaviour
 
         lineRenderer.startColor = Color.white;
         lineRenderer.endColor = Color.white;
-
     }
+
     void Shoot()
     {
         Vector3 startPoint = transform.position;
@@ -101,7 +107,6 @@ public class Aim : MonoBehaviour
         bulletPoints.Add(currentPoint);
         bulletDirections.Add(currentDir);
 
-        // ИСПОЛЬЗУЕМ maxReflectionsBullet (5 отскоков)
         for (int i = 0; i < maxReflectionsBullet; i++)
         {
             RaycastHit2D hit = Physics2D.Raycast(currentPoint, currentDir, raycastDistance, collisionMask);
@@ -128,7 +133,6 @@ public class Aim : MonoBehaviour
             }
         }
 
-        // Создаём пулю
         GameObject bullet = Instantiate(bulletPrefab, startPoint, Quaternion.identity);
         Bullet bulletScript = bullet.GetComponent<Bullet>();
 
