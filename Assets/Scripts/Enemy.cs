@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
@@ -19,4 +19,4 @@ public class Enemy : MonoBehaviour
         else
             Debug.LogError("EnemyCounter не найден при уничтожении!");
     }
-}
+}*/

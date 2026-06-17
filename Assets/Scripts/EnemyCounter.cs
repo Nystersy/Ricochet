@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 using TMPro;
 
 public class EnemyCounter : MonoBehaviour
@@ -36,4 +36,4 @@ public class EnemyCounter : MonoBehaviour
         if (counterText != null)
             counterText.text = $"Врагов: {enemiesRemaining}";
     }
-}
+}*/

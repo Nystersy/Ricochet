@@ -85,8 +85,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0, g: 0, b: 1, a: 1}
+  m_Sprite: {fileID: -3475422345579652110, guid: fcce71c356bb0a94b938f82f17e6049f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -171,13 +171,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Aim
   lineRenderer: {fileID: 1610273180625225405}
-  maxReflections: 5
+  maxReflectionsLine: 2
+  raycastDistance: 100
   collisionMask:
     serializedVersion: 2
     m_Bits: 72
+  maxReflectionsBullet: 10
   bulletPrefab: {fileID: 7193083746013486513, guid: 5c4d656b990d3aa48a576d38deb8d8ce, type: 3}
   bulletSpeed: 7
-  raycastDistance: 100
   wallBounceOffset: 0.1
 --- !u!120 &1610273180625225405
 LineRenderer:
