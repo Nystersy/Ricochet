@@ -8,6 +8,7 @@ public class Aim : MonoBehaviour
     [Header("Ссылки")]
     public CharacterAim characterAim;
     public LineRenderer lineRenderer;
+<<<<<<< HEAD
     public GameObject bulletPrefab;
 
     [Header("Настройки прицельной линии")]
@@ -19,6 +20,15 @@ public class Aim : MonoBehaviour
     public float bulletSpeed = 10f;
     public int bulletReflections = 5;      // сколько реальных отскоков делает пуля
     public LayerMask enemyMask;            // только враги (Enemy) — для проверки попаданий
+=======
+    public int maxReflectionsLine = 2;
+    public int maxReflectionsBullet = 5;
+    public LayerMask collisionMask;
+    public GameObject bulletPrefab;
+    public float bulletSpeed = 15f;
+    public float raycastDistance = 100f;
+    public float wallBounceOffset = 0.2f;
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
 
     private const float SkinWidth = 0.01f; // отступ от стены при отражении
 
@@ -38,6 +48,16 @@ public class Aim : MonoBehaviour
 
     void Update()
     {
+        if (GameStarter.isInputLocked || !GameStarter.isGameActive)
+        {
+            if (lineRenderer.enabled)
+                lineRenderer.enabled = false;
+            return;
+        }
+
+        if (!lineRenderer.enabled)
+            lineRenderer.enabled = true;
+
         DrawPredictionLine();
         if (Input.GetMouseButtonDown(0))
 {
@@ -63,6 +83,7 @@ public class Aim : MonoBehaviour
         mousePos.z = 0;
         Vector2 direction = ((Vector2)(mousePos - startPoint)).normalized;
 
+<<<<<<< HEAD
         List<Vector2> path = CalculatePath(startPoint, direction, lineReflections);
 
         lineRenderer.positionCount = path.Count;
@@ -70,6 +91,44 @@ public class Aim : MonoBehaviour
         for (int i = 0; i < path.Count; i++)
             arr[i] = new Vector3(path[i].x, path[i].y, 0f);
         lineRenderer.SetPositions(arr);
+=======
+        points.Clear();
+        points.Add(startPoint);
+
+        Vector3 currentPoint = startPoint;
+        Vector3 currentDir = direction;
+
+        for (int i = 0; i < maxReflectionsLine; i++)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(currentPoint, currentDir, raycastDistance, collisionMask);
+
+            if (hit.collider != null)
+            {
+                Vector3 hitPoint = new Vector3(hit.point.x, hit.point.y, 0);
+                points.Add(hitPoint);
+
+                if (hit.collider.CompareTag("Enemy"))
+                {
+                    break;
+                }
+
+                Vector2 reflected = Vector2.Reflect(currentDir, hit.normal);
+                currentDir = new Vector3(reflected.x, reflected.y, 0);
+                currentPoint = hitPoint + currentDir * wallBounceOffset;
+            }
+            else
+            {
+                points.Add(currentPoint + currentDir * raycastDistance);
+                break;
+            }
+        }
+
+        lineRenderer.positionCount = points.Count;
+        lineRenderer.SetPositions(points.ToArray());
+
+        lineRenderer.startColor = Color.white;
+        lineRenderer.endColor = Color.white;
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
     }
 
     void Shoot()
@@ -81,6 +140,41 @@ public class Aim : MonoBehaviour
 
         List<Vector2> bulletPoints = CalculatePath(startPoint, direction, bulletReflections);
 
+<<<<<<< HEAD
+=======
+        Vector2 currentPoint = startPoint;
+        Vector2 currentDir = direction;
+
+        bulletPoints.Add(currentPoint);
+        bulletDirections.Add(currentDir);
+
+        for (int i = 0; i < maxReflectionsBullet; i++)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(currentPoint, currentDir, raycastDistance, collisionMask);
+
+            if (hit.collider != null)
+            {
+                bulletPoints.Add(hit.point);
+                bulletDirections.Add(currentDir);
+
+                if (hit.collider.CompareTag("Enemy"))
+                {
+                    break;
+                }
+
+                currentDir = Vector2.Reflect(currentDir, hit.normal);
+                currentDir.Normalize();
+                currentPoint = hit.point + currentDir * wallBounceOffset;
+            }
+            else
+            {
+                bulletPoints.Add(currentPoint + currentDir * raycastDistance);
+                bulletDirections.Add(currentDir);
+                break;
+            }
+        }
+
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
         GameObject bullet = Instantiate(bulletPrefab, startPoint, Quaternion.identity);
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         if (bulletScript != null)

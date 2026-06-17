@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+﻿using System.Collections;
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,17 +13,25 @@ public class Bullet : MonoBehaviour
     private bool isMoving = false;
     private LayerMask enemyMask;
 
+<<<<<<< HEAD
     // Список уже убитых врагов, чтобы не убивать одного и того же дважды
     private HashSet<Collider2D> hitEnemies = new HashSet<Collider2D>();
 
     void Update()
     {
         if (!isMoving || points == null) return;
+=======
+    void Update()
+    {
+        if (!isMoving) return;
+        if (points == null || points.Count == 0) return;
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
 
         if (currentTargetIndex < points.Count)
         {
             Vector2 target = points[currentTargetIndex];
 
+<<<<<<< HEAD
             // Поворачиваем спрайт в сторону движения
             Vector2 moveDir = target - (Vector2)transform.position;
             if (moveDir.sqrMagnitude > 0.0001f)
@@ -48,6 +60,14 @@ public class Bullet : MonoBehaviour
                 }
             }
 
+=======
+            transform.position = Vector2.MoveTowards(
+                transform.position,
+                target,
+                speed * Time.deltaTime
+            );
+
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
             if (Vector2.Distance(transform.position, target) < 0.05f)
             {
                 transform.position = target;
@@ -60,6 +80,7 @@ public class Bullet : MonoBehaviour
         }
     }
 
+<<<<<<< HEAD
     public void Initialize(List<Vector2> bulletPoints, float bulletSpeed, LayerMask mask)
     {
         points = bulletPoints;
@@ -78,6 +99,27 @@ public class Bullet : MonoBehaviour
                 float angle = Mathf.Atan2(startDir.y, startDir.x) * Mathf.Rad2Deg;
                 transform.rotation = Quaternion.Euler(0f, 0f, angle);
             }
+=======
+    public void Initialize(List<Vector2> bulletPoints, List<Vector2> bulletDirections, float bulletSpeed, LayerMask layer)
+    {
+        points = bulletPoints;
+        speed = bulletSpeed;
+
+        if (points.Count > 0)
+        {
+            transform.position = points[0];
+            currentTargetIndex = 1;
+            isMoving = true;
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
         }
     }
 }

@@ -15,7 +15,11 @@ public class GameStarter : MonoBehaviour
 
     public static bool isGameActive = false;
     public static bool isGamePaused = false;
+<<<<<<< HEAD
     public static int currentLevelIndex = 0;
+=======
+    public static bool isInputLocked = true;
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
 
     void Start()
     {
@@ -24,26 +28,34 @@ public class GameStarter : MonoBehaviour
 
     void Update()
     {
-        if (isGameActive && Input.GetKeyDown(KeyCode.Escape))
+        if (isGameActive && !isGamePaused && Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isGamePaused)
-                ResumeGame();
-            else
-                PauseGame();
+            PauseGame();
+        }
+        else if (isGameActive && isGamePaused && Input.GetKeyDown(KeyCode.Escape))
+        {
+            ResumeGame();
         }
     }
 
     // ---------- Главное меню ----------
     public void ShowMainMenu()
     {
+<<<<<<< HEAD
         SetActiveSafe(mainMenuPanel, true);
         SetActiveSafe(levelSelectPanel, false);
         SetActiveSafe(pausePanel, false);
         SetActiveSafe(winPanel, false);
 
+=======
+        mainMenuPanel.SetActive(true);
+        pausePanel.SetActive(false);
+        winPanel.SetActive(false);
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
         Time.timeScale = 0f;
         isGameActive = false;
         isGamePaused = false;
+        isInputLocked = true;
     }
 
     // ---------- Выбор уровня ----------
@@ -82,34 +94,52 @@ public class GameStarter : MonoBehaviour
     // ---------- Старт текущей сцены (для кнопки "Играть" в главном меню) ----------
     public void StartGame()
     {
+<<<<<<< HEAD
         SetActiveSafe(mainMenuPanel, false);
         SetActiveSafe(levelSelectPanel, false);
         SetActiveSafe(pausePanel, false);
         SetActiveSafe(winPanel, false);
 
+=======
+        mainMenuPanel.SetActive(false);
+        pausePanel.SetActive(false);
+        winPanel.SetActive(false);
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
         Time.timeScale = 1f;
         isGameActive = true;
         isGamePaused = false;
+        isInputLocked = false;
     }
 
     // ---------- Пауза ----------
     public void PauseGame()
     {
+<<<<<<< HEAD
         SetActiveSafe(pausePanel, true);
+=======
+        pausePanel.SetActive(true);
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
         Time.timeScale = 0f;
         isGamePaused = true;
+        isInputLocked = true;
     }
 
     public void ResumeGame()
     {
+<<<<<<< HEAD
         SetActiveSafe(pausePanel, false);
+=======
+        pausePanel.SetActive(false);
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
         Time.timeScale = 1f;
         isGamePaused = false;
+        isInputLocked = false;
     }
 
     // ---------- Победа ----------
     public void WinGame()
     {
+<<<<<<< HEAD
         if (winPanel != null)
         {
             winPanel.SetActive(true);
@@ -120,14 +150,19 @@ public class GameStarter : MonoBehaviour
             Debug.LogError("winPanel не назначен в GameStarter!");
         }
 
+=======
+        winPanel.SetActive(true);
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
         Time.timeScale = 0f;
         isGameActive = false;
         isGamePaused = true;
+        isInputLocked = true;
     }
 
     // ---------- Следующий уровень ----------
     public void NextLevel()
     {
+<<<<<<< HEAD
         int nextIndex = currentLevelIndex + 1;
 
         if (levelSceneNames != null && nextIndex < levelSceneNames.Length)
@@ -148,11 +183,15 @@ public class GameStarter : MonoBehaviour
         Time.timeScale = 1f;
         isGameActive = true;
         isGamePaused = false;
+=======
+        // ������������� �����
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void QuitToMenu()
     {
+<<<<<<< HEAD
         // Если меню в той же сцене — просто показать панель
         ShowMainMenu();
 
@@ -172,5 +211,9 @@ public class GameStarter : MonoBehaviour
     private void SetActiveSafe(GameObject go, bool state)
     {
         if (go != null) go.SetActive(state);
+=======
+        // ������������� ����� � ���������� ����
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+>>>>>>> 33d891e374110ecb5480056823633093554ddc02
     }
 }
