@@ -142,6 +142,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82cd503642de3db4fb7cd1fc10060182, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
+  ricochetSounds:
+  - {fileID: 8300000, guid: 79305c9384fa89d45bf50da7cf27b1e1, type: 3}
+  - {fileID: 8300000, guid: 4f89dec76eb53ab4fb37eff7931f2484, type: 3}
+  - {fileID: 8300000, guid: 124ca0537635f8a448cde3965a25eacd, type: 3}
+  - {fileID: 8300000, guid: 98adccbd5163b124ca715a8f204fb2a9, type: 3}
+  - {fileID: 8300000, guid: 50ba64f65913c10428c2afe5ce2fa037, type: 3}
+  - {fileID: 8300000, guid: d5f9210a14a578e4b8ad3c0affa146b6, type: 3}
+  ricochetVolume: 1
+  ricochetVolumeVariation: 0.1
+  ricochetPitchVariation: 0.15
+  hitEnemySounds:
+  - {fileID: 8300000, guid: 24d4420363f667149adae3123b3ccdb0, type: 3}
+  - {fileID: 8300000, guid: 4b950531dfb0f734ebe9f6c01031aa72, type: 3}
+  hitEnemyVolume: 0.398
+  hitEnemyVolumeVariation: 0
+  hitEnemyPitchVariation: 0.243
 --- !u!50 &4015687023694626311
 Rigidbody2D:
   serializedVersion: 5

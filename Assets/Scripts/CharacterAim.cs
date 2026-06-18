@@ -4,7 +4,7 @@ public class CharacterAim : MonoBehaviour
 {
     [SerializeField] private Transform upperBody;
     [SerializeField] private Transform body;
-    [SerializeField] private Transform firePoint;      // <-- новая ссылка
+    [SerializeField] private Transform firePoint;
     [SerializeField] private float maxLeanAngle = 60f;
 
     private SpriteRenderer upperSprite;
@@ -24,16 +24,19 @@ public class CharacterAim : MonoBehaviour
         upperSprite = upperBody?.GetComponent<SpriteRenderer>();
         bodySprite = body?.GetComponent<SpriteRenderer>();
 
-        // Находим FirePoint внутри UpperBody, если не назначен вручную
         if (firePoint == null && upperBody != null)
             firePoint = upperBody.Find("FirePoint");
-        
+
         if (firePoint != null)
-            firePointLocalPos = firePoint.localPosition; // запоминаем позицию при взгляде вправо
+            firePointLocalPos = firePoint.localPosition;
     }
 
     void Update()
     {
+        // В меню или на паузе — игрок замирает, не реагирует на мышь
+        if (!GameStarter.isGameActive || GameStarter.isGamePaused)
+            return;
+
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 direction = mousePos - transform.position;
 
@@ -46,7 +49,7 @@ public class CharacterAim : MonoBehaviour
             if (upperSprite != null) upperSprite.flipX = !IsFacingRight;
             if (bodySprite != null) bodySprite.flipX = !IsFacingRight;
 
-            // Зеркалим FirePoint: меняем знак X локальной позиции
+            // Зеркалим FirePoint
             if (firePoint != null)
             {
                 Vector3 newPos = firePointLocalPos;
@@ -62,12 +65,11 @@ public class CharacterAim : MonoBehaviour
         upperBody.rotation = Quaternion.Euler(0, 0, targetAngle);
     }
 
-    // Метод для получения позиции дула (используется Aim)
     public Vector3 GetFirePointPosition()
     {
         if (firePoint != null)
             return firePoint.position;
         else
-            return transform.position; // запасной вариант
+            return transform.position;
     }
 }
